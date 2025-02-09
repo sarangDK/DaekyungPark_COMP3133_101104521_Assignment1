@@ -12,6 +12,10 @@ const app = express();
 
 connectDB();
 
+app.get("/", (req, res) => {
+  res.send("API is working - Daekyung Park, COMP3133 Assignment1")
+});
+
 app.use(cors());
 app.use('/graphql', graphqlHTTP({
     schema,
