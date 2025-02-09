@@ -19,7 +19,6 @@ const userType = new GraphQLObjectType({
   })
 });
 
-
 // Employee type definition 
 const EmployeeType = new GraphQLObjectType({
   name: 'Employee',
@@ -61,6 +60,23 @@ const RootQuery = new GraphQLObjectType({
           throw new Error('Invalid credentials');
         }
         return "Login successful";
+      }
+    },
+    // users API -> return all users
+    // if failed -> throw error
+    users: {
+      type: new GraphQLList(userType),
+      async resolve() {
+        return await User.find();
+      }
+    },
+    usersbyId: {
+      type: userType,
+      args: {
+        id: { type: GraphQLID }
+      },
+      async resolve(parent, args) {
+        return await User.findById(args.id);
       }
     },
     employees: {
