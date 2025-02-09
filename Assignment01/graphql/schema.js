@@ -19,6 +19,8 @@ const userType = new GraphQLObjectType({
   })
 });
 
+
+// Employee type definition 
 const EmployeeType = new GraphQLObjectType({
   name: 'Employee',
   fields: () => ({
@@ -41,6 +43,8 @@ const EmployeeType = new GraphQLObjectType({
 const RootQuery = new GraphQLObjectType({
   name: "RootQuery",
   fields: {
+    // login API -> return login successful message
+    // if failed -> throw error
     login: {
       type: GraphQLString,
       args: {
@@ -60,6 +64,7 @@ const RootQuery = new GraphQLObjectType({
       }
     },
     employees: {
+      // API to get all Employees
       type: new GraphQLList(EmployeeType),
       async resolve() {
         return await Employee.find();
@@ -81,6 +86,8 @@ const RootQuery = new GraphQLObjectType({
 const Mutation = new GraphQLObjectType({
   name: `Mutation`,
   fields: {
+    // signup API -> return user object
+    // if failed -> throw error
     signup: {
       type: userType,
       args: {
@@ -98,6 +105,8 @@ const Mutation = new GraphQLObjectType({
         return await user.save();
       }
     },
+    // addEmployee API -> return employee object
+    //  if failed -> throw error
     addEmployee: {
       type: EmployeeType,
       args: {
@@ -116,18 +125,27 @@ const Mutation = new GraphQLObjectType({
         return await employee.save();
       }
     },
+    // updateEmployee API -> return updated employee object
+    // if failed -> throw error
     updateEmployee: {
       type: EmployeeType,
       args: {
         id: { type: GraphQLID },
         first_name: { type: GraphQLString },
         last_name: { type: GraphQLString },
-        email: { type: GraphQLString }
+        email: { type: GraphQLString },
+        designation: { type: GraphQLString },
+        salary: { type: GraphQLFloat },
+        date_of_joining: { type: GraphQLString },
+        department: { type: GraphQLString },
+        employee_photo: { type: GraphQLString }
       },
       async resolve(parent, { id, ...rest }) {
         return await Employee.findByIdAndUpdate(id, rest, { new: true });
       }
     },
+    // deleteEmployee API -> return deleted employee object
+    // if failed -> throw error
     deleteEmployee: {
       type: EmployeeType,
       args: {
@@ -135,6 +153,34 @@ const Mutation = new GraphQLObjectType({
       },
       async resolve(parent, { id }) {
         return await Employee.findByIdAndDelete(id);
+      }
+    },
+    // updateUser API -> return updated user object
+    // if failed -> throw error
+    updateUser: {
+      type: userType,
+      args: {
+        id: { type: GraphQLID },
+        username: { type: GraphQLString },
+        email: { type: GraphQLString },
+        password: { type: GraphQLString }
+      },
+      async resolve(parent, { id, ...rest }) {
+        if (rest.password) {
+          rest.password = await bcrypt.hash(rest.password, 10);
+        }
+        return await User.findByIdAndUpdate(id, rest, { new: true });
+      }
+    },
+    // deleteUser API -> return deleted user object
+    // if failed -> throw error
+    deleteUser: {
+      type: userType,
+      args: {
+        id: { type: GraphQLID }
+      },
+      async resolve(parent, { id }) {
+        return await User.findByIdAndDelete(id);
       }
     }
   }
