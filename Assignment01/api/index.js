@@ -22,7 +22,7 @@ app.use('/graphql', graphqlHTTP({
   }));
 
 app.get("/", (req, res) => {
-    res.send("API is working - Daekyung Park, COMP3133 Assignment1")
+  res.json({ message: "API Running - Daekyung , COMP 3133 , Assignment 1" });
 });
 
   const PORT = process.env.PORT || 4000;
